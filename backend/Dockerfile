@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python deps first (better build caching)
 COPY requirements.txt .
+
+# Old packages need pkg_resources, which was removed in setuptools>=81.
+# PIP_CONSTRAINT also applies inside pip's isolated build environments (pip 24.x).
+RUN echo "setuptools<81" > /tmp/constraints.txt
+ENV PIP_CONSTRAINT=/tmp/constraints.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
